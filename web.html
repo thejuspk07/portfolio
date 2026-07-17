@@ -43,6 +43,43 @@
     body {
       background: #050505;
       overflow-x: hidden;
+      cursor: crosshair;
+    }
+
+    a, button, [role="button"] {
+      cursor: crosshair !important;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #050505;
+      border-left: 1px solid rgba(239, 68, 68, 0.1);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #ef4444;
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #dc2626;
+    }
+
+    /* Bootloader */
+    #boot-loader {
+      position: fixed;
+      inset: 0;
+      background: #050505;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 40px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      color: #ef4444;
+      font-size: 14px;
+      transition: opacity 0.5s ease-out;
     }
 
     #canvas-bg {
@@ -128,6 +165,11 @@
 </head>
 
 <body>
+  <!-- Fake Bootloader Overlay -->
+  <div id="boot-loader">
+    <div id="boot-log" class="max-w-2xl"></div>
+  </div>
+
   <!-- Fixed canvas background for scroll animation -->
   <div id="canvas-bg">
     <canvas id="frame-canvas"></canvas>
@@ -835,27 +877,68 @@
         }
       }
 
+      let isTicking = false;
+
       function onScroll() {
         const scrollY = window.scrollY || window.pageYOffset;
         const maxScroll = TOTAL_FRAMES * PIXELS_PER_FRAME;
         const progress = Math.min(scrollY / maxScroll, 1);
         target = progress * (TOTAL_FRAMES - 1);
+        
+        if (!isTicking) {
+          isTicking = true;
+          requestAnimationFrame(tick);
+        }
       }
 
       function tick() {
         const diff = target - current;
         if (Math.abs(diff) > 0.01) {
           current += diff * 0.07; // smoothing factor
+          drawFrame(Math.round(current));
+          requestAnimationFrame(tick);
         } else {
           current = target;
+          drawFrame(Math.round(current));
+          isTicking = false; // Rest state, stop loop to save battery/CPU
         }
-        drawFrame(Math.round(current));
-        requestAnimationFrame(tick);
       }
 
       preload();
       resize();
-      tick();
+      
+      // Bootloader Logic
+      const bootLines = [
+        "INITIALIZING NEURAL LINK...",
+        "CONNECTING TO COGNITIVE NODE...",
+        "ESTABLISHING SECURE CONNECTION...",
+        "LOADING VISUAL ASSETS (180 FRAMES)...",
+        "DECRYPTING PROFILE DATA...",
+        "SYSTEM READY."
+      ];
+      const bootLog = document.getElementById('boot-log');
+      const bootLoader = document.getElementById('boot-loader');
+      
+      let delay = 200;
+      bootLines.forEach((line, index) => {
+        setTimeout(() => {
+          const p = document.createElement('p');
+          p.textContent = `> ${line}`;
+          p.className = 'mb-2 opacity-0 transition-opacity duration-300';
+          bootLog.appendChild(p);
+          
+          // Trigger reflow for fade in
+          setTimeout(() => p.classList.remove('opacity-0'), 10);
+          
+          if (index === bootLines.length - 1) {
+             setTimeout(() => {
+               bootLoader.style.opacity = '0';
+               setTimeout(() => bootLoader.remove(), 500);
+             }, 800);
+          }
+        }, delay);
+        delay += 250 + Math.random() * 200;
+      });
 
       window.addEventListener('scroll', onScroll, { passive: true });
       window.addEventListener('resize', resize);
