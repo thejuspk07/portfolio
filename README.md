@@ -3,8 +3,7 @@
 A highly interactive, cinematic web portfolio featuring a continuous 1080p background animation engine built entirely in Vanilla JS.
 
 ## 🔴 Live Demo
-**[View Live on Vercel](https://portfolio-thejuspk07.vercel.app)**  
-*(Note: If your Vercel project name is different, just update this link!)*
+**[View Live on Vercel](https://portfolio-a38pv24dr-thejus-pks-projects.vercel.app/)**
 
 ## 🚀 Features
 - **Cinematic HD Animation**: Dual-sequence 1080p hardware-accelerated canvas engine (Samurai + Katana).
