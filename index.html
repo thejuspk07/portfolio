@@ -890,62 +890,90 @@
     
     lucide.createIcons();
     (function () {
-      // IMPORTANT: set this to the ACTUAL number of frame images you have in frames/
       const TOTAL_FRAMES = 180;
       const FRAME_DIR = 'frames/';
+      const TOTAL_FRAMES_2 = 240;
+      const FRAME_DIR_2 = 'frames2/ezgif-2ce621a0d5fe0304-jpg/';
       const PIXELS_PER_FRAME = 10;
 
       const canvas = document.getElementById('frame-canvas');
       const ctx = canvas.getContext('2d');
 
       const frames = new Array(TOTAL_FRAMES);
+      const frames2 = new Array(TOTAL_FRAMES_2);
+      
       let current = 0;
       let target = 0;
-      let lastDrawnIndex = -1; // last successfully drawn frame index
+      let eduCurrent = 0;
+      let eduTarget = 0;
+      let eduAlpha = 0;
+      let targetEduAlpha = 0;
+      
+      let lastDrawnIndex = -1;
+      let lastDrawnIndex2 = -1;
 
-      function frameUrl(i) {
+      function frameUrl(i, dir) {
         const n = String(i + 1).padStart(3, '0');
-        return FRAME_DIR + 'ezgif-frame-' + n + '.jpg';
+        return dir + 'ezgif-frame-' + n + '.jpg';
       }
 
       function resize() {
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        drawFrame(Math.round(current));
+        drawFrame();
       }
 
       function isReady(img) {
         return img && img.complete && img.naturalWidth > 0;
       }
 
-      function drawFrame(index) {
-        let img = frames[index];
-
-        if (!isReady(img)) {
-          // Target frame not loaded yet — fall back to last good frame
-          if (lastDrawnIndex === -1 || !isReady(frames[lastDrawnIndex])) {
-            return; // nothing usable to draw yet, skip this tick
-          }
-          img = frames[lastDrawnIndex];
-        } else {
-          lastDrawnIndex = index;
+      function drawFrame() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        
+        if (eduAlpha < 1) {
+            let img1 = frames[Math.round(current)];
+            if (!isReady(img1)) {
+              if (lastDrawnIndex !== -1 && isReady(frames[lastDrawnIndex])) {
+                img1 = frames[lastDrawnIndex];
+              }
+            } else {
+              lastDrawnIndex = Math.round(current);
+            }
+            if (isReady(img1)) {
+              ctx.globalAlpha = 1 - eduAlpha;
+              ctx.drawImage(img1, 0, 0, canvas.width, canvas.height);
+            }
         }
 
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        if (eduAlpha > 0) {
+            let img2 = frames2[Math.round(eduCurrent)];
+            if (!isReady(img2)) {
+              if (lastDrawnIndex2 !== -1 && isReady(frames2[lastDrawnIndex2])) {
+                img2 = frames2[lastDrawnIndex2];
+              }
+            } else {
+              lastDrawnIndex2 = Math.round(eduCurrent);
+            }
+            if (isReady(img2)) {
+              ctx.globalAlpha = eduAlpha;
+              ctx.drawImage(img2, 0, 0, canvas.width, canvas.height);
+            }
+        }
+        
+        ctx.globalAlpha = 1.0;
       }
 
       function preload() {
         for (let i = 0; i < TOTAL_FRAMES; i++) {
           const img = new Image();
-          img.onload = () => {
-            if (i === 0) drawFrame(0);
-          };
-          img.onerror = () => {
-            console.warn('Failed to load frame:', frameUrl(i));
-          };
-          img.src = frameUrl(i);
+          img.onload = () => { if (i === 0) drawFrame(); };
+          img.src = frameUrl(i, FRAME_DIR);
           frames[i] = img;
+        }
+        for (let i = 0; i < TOTAL_FRAMES_2; i++) {
+          const img = new Image();
+          img.src = frameUrl(i, FRAME_DIR_2);
+          frames2[i] = img;
         }
       }
 
@@ -953,9 +981,26 @@
 
       function onScroll() {
         const scrollY = window.scrollY || window.pageYOffset;
-        const maxScroll = TOTAL_FRAMES * PIXELS_PER_FRAME;
-        const progress = Math.min(scrollY / maxScroll, 1);
-        target = progress * (TOTAL_FRAMES - 1);
+        
+        const eduSection = document.getElementById('education');
+        if (eduSection) {
+            const eduTop = eduSection.getBoundingClientRect().top + scrollY;
+            const vh = window.innerHeight;
+            // Start transition when Education section enters the bottom third of the screen
+            const eduStartScroll = eduTop - (vh * 0.7); 
+            
+            if (scrollY >= eduStartScroll) {
+               targetEduAlpha = 1;
+               const maxScroll = document.documentElement.scrollHeight - vh;
+               const remainingScroll = maxScroll - eduStartScroll;
+               const progress = remainingScroll > 0 ? (scrollY - eduStartScroll) / remainingScroll : 1;
+               eduTarget = Math.max(0, Math.min(progress, 1)) * (TOTAL_FRAMES_2 - 1);
+            } else {
+               targetEduAlpha = 0;
+               const progress = eduStartScroll > 0 ? scrollY / eduStartScroll : 1;
+               target = Math.max(0, Math.min(progress, 1)) * (TOTAL_FRAMES - 1);
+            }
+        }
         
         if (!isTicking) {
           isTicking = true;
@@ -964,15 +1009,38 @@
       }
 
       function tick() {
-        const diff = target - current;
-        if (Math.abs(diff) > 0.01) {
-          current += diff * 0.07; // smoothing factor
-          drawFrame(Math.round(current));
-          requestAnimationFrame(tick);
+        let changed = false;
+        
+        const diff1 = target - current;
+        if (Math.abs(diff1) > 0.01) {
+          current += diff1 * 0.07;
+          changed = true;
         } else {
           current = target;
-          drawFrame(Math.round(current));
-          isTicking = false; // Rest state, stop loop to save battery/CPU
+        }
+        
+        const diff2 = eduTarget - eduCurrent;
+        if (Math.abs(diff2) > 0.01) {
+          eduCurrent += diff2 * 0.07;
+          changed = true;
+        } else {
+          eduCurrent = eduTarget;
+        }
+        
+        const diffAlpha = targetEduAlpha - eduAlpha;
+        if (Math.abs(diffAlpha) > 0.005) {
+          eduAlpha += diffAlpha * 0.05;
+          changed = true;
+        } else {
+          eduAlpha = targetEduAlpha;
+        }
+        
+        if (changed) {
+          drawFrame();
+          requestAnimationFrame(tick);
+        } else {
+          drawFrame();
+          isTicking = false;
         }
       }
 
