@@ -1,4 +1,4 @@
-# Cinematic Cyberpunk Portfolio
+# Portfolio
 
 A highly interactive, cinematic web portfolio featuring a continuous 1080p background animation engine built entirely in Vanilla JS.
 
