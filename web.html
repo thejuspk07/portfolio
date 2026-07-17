@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Thejus P K — AI Engineer Portfolio</title>
+  <meta name="description" content="Portfolio of Thejus P K, an AI & Data Science Engineer specializing in Machine Learning, Deep Learning, and NLP.">
+  <meta property="og:title" content="Thejus P K — AI Engineer Portfolio">
+  <meta property="og:description" content="Portfolio of Thejus P K, an AI & Data Science Engineer specializing in Machine Learning, Deep Learning, and NLP.">
+  <meta property="og:type" content="website">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"DM Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            display: ['"DM Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace'],
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+    body {
+      background: #050505;
+      overflow-x: hidden;
+    }
+
+    #canvas-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    #canvas-bg canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    #content-wrapper {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Scroll reveal animations */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+    .reveal-delay-5 { transition-delay: 0.5s; }
+
+    /* Section divider glow */
+    .section-glow {
+      position: relative;
+    }
+    .section-glow::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #ef4444, transparent);
+    }
+
+    /* Skill bar animation */
+    .skill-bar {
+      height: 2px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .skill-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #ef4444, #f97316);
+      border-radius: 2px;
+      width: 0;
+      transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .visible .skill-bar-fill {
+      width: var(--skill-level);
+    }
+
+    /* Timeline connector */
+    .timeline-line {
+      position: absolute;
+      left: 7px;
+      top: 24px;
+      bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, #ef4444, transparent);
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Fixed canvas background for scroll animation -->
+  <div id="canvas-bg">
+    <canvas id="frame-canvas"></canvas>
+  </div>
+
+  <!-- All scrollable content sits on top of the canvas -->
+  <div id="content-wrapper" class="text-neutral-200 font-sans selection:bg-red-500 selection:text-black">
+
+    <!-- Symmetrical technical grid HUD lines overlay (fixed to viewport like canvas) -->
+    <div class="fixed inset-0 pointer-events-none z-[2] overflow-hidden">
+      <div class="absolute left-1/2 top-0 bottom-0 w-px bg-red-500/10 -translate-x-1/2"></div>
+      <div class="absolute top-1/4 left-0 right-0 h-px bg-red-500/10"></div>
+      <div class="absolute top-2/4 left-0 right-0 h-px bg-red-500/10"></div>
+      <div class="absolute top-3/4 left-0 right-0 h-px bg-red-500/10"></div>
+      
+      <div class="absolute top-8 left-8 font-mono text-xs text-red-500/40 tracking-wider">
+        FRAME: SECURE
+      </div>
+      <div class="absolute bottom-8 right-8 font-mono text-xs text-red-500/40 tracking-wider">
+        LAT_LONG: 11.97_75.35 // KANNUR_KERALA
+      </div>
+    </div>
+
+    <!-- Hero area: transparent bg so canvas animation shows through -->
+    <div class="relative min-h-screen">
+
+    <!-- HEADER & CONTROLS -->
+    <header class="relative z-20 flex items-center justify-between px-8 py-6 max-w-7xl mx-auto border-b border-neutral-900/30">
+      <div class="flex items-center space-x-3 cursor-pointer" onclick="document.getElementById('hero').scrollIntoView({behavior:'smooth'})">
+        <span class="font-display font-black text-2xl tracking-widest text-white hover:text-red-500 transition-all duration-300">
+          THEJUS P K
+        </span>
+        <span class="font-mono text-xs px-2.5 py-1 rounded border border-red-500/20 text-red-500 uppercase tracking-widest hidden sm:inline-block">
+          AI ENGINEER
+        </span>
+      </div>
+
+      <!-- Navigation Menu -->
+      <nav class="hidden md:flex items-center space-x-8">
+        <button onclick="SFX.click(); document.getElementById('hero').scrollIntoView({behavior:'smooth'})" class="font-mono text-xs tracking-widest transition-all duration-300 relative py-1 text-white font-medium">
+          IDENTITY
+          <div class="absolute bottom-0 left-0 right-0 h-[1.5px] bg-red-500"></div>
+        </button>
+        <button onclick="SFX.click(); document.getElementById('skills').scrollIntoView({behavior:'smooth'})" class="font-mono text-xs tracking-widest transition-all duration-300 relative py-1 text-neutral-400 hover:text-white">
+          MATRIX
+        </button>
+        <button onclick="SFX.click(); document.getElementById('experience').scrollIntoView({behavior:'smooth'})" class="font-mono text-xs tracking-widest transition-all duration-300 relative py-1 text-neutral-400 hover:text-white">
+          EXPERIENCE
+        </button>
+        <button onclick="SFX.click(); document.getElementById('projects').scrollIntoView({behavior:'smooth'})" class="font-mono text-xs tracking-widest transition-all duration-300 relative py-1 text-neutral-400 hover:text-white">
+          ARENA
+        </button>
+        <button onclick="SFX.click(); document.getElementById('education').scrollIntoView({behavior:'smooth'})" class="font-mono text-xs tracking-widest transition-all duration-300 relative py-1 text-neutral-400 hover:text-white">
+          CHRONOLOGY
+        </button>
+      </nav>
+
+      <!-- Utility bar -->
+      <div class="flex items-center space-x-4">
+        <a href="https://github.com/thejuspk07" target="_blank" class="flex items-center justify-center p-2 text-neutral-300 hover:text-white transition-all duration-300" title="GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.2c3 0 6-2 6-5.6a4.64 4.64 0 0 0-1.3-3.2 4.2 4.2 0 0 0-.1-3.2s-1.1-.3-3.5 1.3a12.3 12.3 0 0 0-6.2 0C6.5 2.8 5.4 3.1 5.4 3.1a4.2 4.2 0 0 0-.1 3.2A4.64 4.64 0 0 0 4 9.5c0 3.6 3 5.6 6 5.6a4.8 4.8 0 0 0-1 3.2v4"></path></svg>
+        </a>
+        <a href="https://linkedin.com/in/thejus-pk" target="_blank" class="flex items-center justify-center p-2 text-neutral-300 hover:text-white transition-all duration-300" title="LinkedIn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+        </a>
+        <button id="sound-toggle" onclick="SFX.toggleMute()" class="flex items-center justify-center p-2 text-neutral-300 hover:text-white transition-all duration-300" title="Toggle Sound">
+          <svg id="sound-icon-on" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+          <svg id="sound-icon-off" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 hidden"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+        </button>
+        <button onclick="SFX.click(); document.getElementById('contact').scrollIntoView({behavior:'smooth'})" class="px-5 py-2 rounded bg-white text-black font-mono text-xs tracking-wider hover:bg-red-500 hover:text-black transition-all duration-300 uppercase hidden md:block">
+          CONTACT
+        </button>
+        <!-- Mobile Menu Toggle -->
+        <button id="mobile-menu-btn" onclick="toggleMobileMenu()" class="md:hidden flex items-center justify-center p-2 text-neutral-300 hover:text-white transition-all duration-300">
+          <i data-lucide="menu" class="w-6 h-6"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Mobile Navigation Menu (Hidden by default) -->
+    <div id="mobile-menu" class="fixed inset-0 bg-black/95 backdrop-blur-xl z-50 flex-col items-center justify-center hidden opacity-0 transition-opacity duration-300">
+      <button onclick="toggleMobileMenu()" class="absolute top-6 right-8 p-2 text-neutral-300 hover:text-white">
+        <i data-lucide="x" class="w-8 h-8"></i>
+      </button>
+      <nav class="flex flex-col items-center space-y-8">
+        <button onclick="SFX.click(); toggleMobileMenu(); document.getElementById('hero').scrollIntoView({behavior:'smooth'})" class="font-mono text-lg tracking-widest text-white hover:text-red-500">IDENTITY</button>
+        <button onclick="SFX.click(); toggleMobileMenu(); document.getElementById('skills').scrollIntoView({behavior:'smooth'})" class="font-mono text-lg tracking-widest text-white hover:text-red-500">MATRIX</button>
+        <button onclick="SFX.click(); toggleMobileMenu(); document.getElementById('experience').scrollIntoView({behavior:'smooth'})" class="font-mono text-lg tracking-widest text-white hover:text-red-500">EXPERIENCE</button>
+        <button onclick="SFX.click(); toggleMobileMenu(); document.getElementById('projects').scrollIntoView({behavior:'smooth'})" class="font-mono text-lg tracking-widest text-white hover:text-red-500">ARENA</button>
+        <button onclick="SFX.click(); toggleMobileMenu(); document.getElementById('education').scrollIntoView({behavior:'smooth'})" class="font-mono text-lg tracking-widest text-white hover:text-red-500">CHRONOLOGY</button>
+        <button onclick="SFX.click(); toggleMobileMenu(); document.getElementById('contact').scrollIntoView({behavior:'smooth'})" class="font-mono text-lg tracking-widest text-red-500 border border-red-500/50 px-6 py-2 rounded">CONTACT</button>
+      </nav>
+    </div>
+    </header>
+
+    <!-- CINEMATIC HERO SECTION -->
+    <section id="hero" class="relative h-[calc(100vh-80px)] flex flex-col justify-between max-w-7xl mx-auto px-8 pb-12 overflow-hidden z-20">
+      
+      <!-- Cinematic Backdrop Text -->
+      <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none select-none z-0">
+        <div class="font-mono text-xs tracking-[0.6em] text-red-500/40 font-black mb-2 opacity-80">
+          B.TECH AI & DATA SCIENCE
+        </div>
+        <h1 class="text-[13vw] font-black text-white/5 tracking-[0.05em] leading-none uppercase select-none text-center font-display opacity-80">
+          THEJUS P K
+        </h1>
+        <div class="font-mono text-xs tracking-[0.4em] text-neutral-500 mt-4 uppercase opacity-40">
+          LATENCY CHECK: SECURE // HANDSHAKE ESTABLISHED
+        </div>
+      </div>
+
+      <!-- Content Layout Grid -->
+      <div class="relative grid grid-cols-1 lg:grid-cols-12 gap-8 items-center min-h-[70vh] z-10 my-auto pointer-events-none">
+        
+        <!-- LEFT HAND: PROFESSIONAL CAPABILITIES -->
+        <div class="col-span-1 lg:col-span-3 order-2 lg:order-1 flex flex-col space-y-6 pointer-events-auto">
+          <div class="relative p-6 rounded-lg border border-neutral-900 bg-neutral-950/40 backdrop-blur-md">
+            <div class="absolute -top-1.5 -left-1.5 w-3.5 h-3.5 border border-red-500/40 flex items-center justify-center">
+              <div class="w-1 h-1 bg-red-500"></div>
+            </div>
+            
+            <div class="h-[1px] w-12 bg-red-500/50 mb-4"></div>
+            
+            <h3 class="font-mono text-xs text-red-400 tracking-[0.2em] mb-3 uppercase">
+              OBJECTIVE // PROFILE_LOG
+            </h3>
+            
+            <p class="font-sans text-sm text-neutral-400 leading-relaxed font-light">
+              B.Tech undergraduate in Artificial Intelligence and Data Science with hands-on experience across end-to-end machine learning projects spanning deep learning, NLP, and Python-based data analysis. Known for analytical thinking and practical exposure to real-time streams.
+            </p>
+
+            <div class="mt-4 pt-4 border-t border-neutral-900/50 flex justify-between font-mono text-xs text-neutral-500">
+              <span>INTERN DESIRED</span>
+              <span class="text-red-400">AI / ML / PYTHON</span>
+            </div>
+          </div>
+
+          <!-- Quick Callout Specs -->
+          <div class="grid grid-cols-2 gap-3">
+            <div class="p-4 bg-neutral-950/20 border border-neutral-900 rounded">
+              <span class="font-mono text-xs text-neutral-500 block mb-1">CURRENT CGPA</span>
+              <span class="text-lg font-semibold text-white">7.2 / 10</span>
+            </div>
+            <div class="p-4 bg-neutral-950/20 border border-neutral-900 rounded">
+              <span class="font-mono text-xs text-neutral-500 block mb-1">ENROLMENT</span>
+              <span class="text-lg font-semibold text-white">2023 - 2027</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- CENTER SECTION: EMPTY FOR CANVAS -->
+        <div class="col-span-1 lg:col-span-6 order-1 lg:order-2 flex items-center justify-center relative min-h-[45vh] lg:min-h-[60vh]">
+        </div>
+
+        <!-- RIGHT HAND: HIGH TECH CALLOUTS -->
+        <div class="col-span-1 lg:col-span-3 order-3 flex flex-col space-y-4 items-stretch lg:items-end text-left lg:text-right pointer-events-auto">
+          
+          <span class="font-mono text-xs text-neutral-500 tracking-[0.2em] uppercase">
+            RECOGNIZED_DOMAINS
+          </span>
+
+          <!-- Interactive Callout Lists -->
+          <div class="p-3.5 rounded border border-neutral-900 bg-neutral-950/10 hover:border-red-500/30 transition-all duration-300 group flex justify-between items-center text-left w-full">
+            <div>
+              <span class="font-display font-bold text-sm text-white block uppercase tracking-wider group-hover:text-red-400 transition-colors">
+                Machine Learning
+              </span>
+              <span class="text-xs text-neutral-500 block mt-0.5 leading-normal">
+                Classification, Supervised workflows
+              </span>
+            </div>
+            <span class="font-mono text-xs text-neutral-400 pl-4">01</span>
+          </div>
+
+          <div class="p-3.5 rounded border border-neutral-900 bg-neutral-950/10 hover:border-red-500/30 transition-all duration-300 group flex justify-between items-center text-left w-full">
+            <div>
+              <span class="font-display font-bold text-sm text-white block uppercase tracking-wider group-hover:text-red-400 transition-colors">
+                Deep Learning
+              </span>
+              <span class="text-xs text-neutral-500 block mt-0.5 leading-normal">
+                TensorFlow, Keras, LSTM
+              </span>
+            </div>
+            <span class="font-mono text-xs text-neutral-400 pl-4">02</span>
+          </div>
+
+          <div class="p-3.5 rounded border border-neutral-900 bg-neutral-950/10 hover:border-red-500/30 transition-all duration-300 group flex justify-between items-center text-left w-full">
+            <div>
+              <span class="font-display font-bold text-sm text-white block uppercase tracking-wider group-hover:text-red-400 transition-colors">
+                NLP Architecture
+              </span>
+              <span class="text-xs text-neutral-500 block mt-0.5 leading-normal">
+                TF-IDF, SVM Sentiment pipelines
+              </span>
+            </div>
+            <span class="font-mono text-xs text-neutral-400 pl-4">03</span>
+          </div>
+
+          <div class="pt-4 flex flex-col sm:flex-row gap-3 w-full">
+            <button onclick="document.getElementById('projects').scrollIntoView({behavior:'smooth'})" class="flex-1 py-3 rounded border border-neutral-800 text-neutral-300 hover:border-red-500/30 hover:text-red-400 text-sm font-mono tracking-widest uppercase transition-all duration-300 cursor-pointer">
+              VIEW PROJECTS
+            </button>
+            <a href="https://drive.google.com/file/d/1gVK9Wds8QMxc_IOFlB7HNnX-zkwQbTGO/view?usp=sharing" target="_blank" class="flex-1 py-3 rounded bg-neutral-900 text-white hover:bg-white hover:text-black text-sm font-mono tracking-widest uppercase transition-all duration-300 flex items-center justify-center space-x-1.5 cursor-pointer">
+              <i data-lucide="file-text" class="w-4 h-4"></i>
+              <span>RESUME</span>
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- Bottom indicator status -->
+      <div class="flex flex-col sm:flex-row items-center justify-between pt-8 border-t border-neutral-900/30 text-xs font-mono text-neutral-500">
+        <div class="flex items-center space-x-4">
+          <span class="flex items-center space-x-2">
+            <span class="w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
+            <span class="text-white">COGNITIVE NODE LIVE</span>
+          </span>
+          <span>STREAMS_ACTIVE: 3</span>
+        </div>
+        <div class="flex items-center space-x-3 mt-4 sm:mt-0 cursor-pointer" onclick="document.getElementById('skills').scrollIntoView({behavior:'smooth'})">
+          <span>SCROLL TO EXPLORE</span>
+          <i data-lucide="arrow-down" class="w-4 h-4 animate-bounce"></i>
+        </div>
+      </div>
+    </section>
+    </div> <!-- end hero area -->
+
+  <!-- ============================================= -->
+  <!-- RESUME DATA SECTIONS - Revealed on Scroll     -->
+  <!-- ============================================= -->
+
+  <!-- TECHNICAL SKILLS -->
+  <!-- Resume sections have opaque backgrounds to cover the canvas as you scroll -->
+  <section id="skills" class="relative px-8 py-24 section-glow bg-black/80 backdrop-blur-sm">
+    <div class="max-w-5xl mx-auto">
+    <div class="reveal">
+      <div class="flex items-center space-x-3 mb-3">
+        <i data-lucide="cpu" class="w-5 h-5 text-red-500"></i>
+        <h2 class="font-mono text-xs text-red-400 tracking-[0.3em] uppercase">TECHNICAL SKILLS // MATRIX</h2>
+      </div>
+      <h3 class="font-display font-black text-4xl text-white mb-12">Skill Arsenal</h3>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <!-- Languages & Tools -->
+      <div class="reveal reveal-delay-1 p-6 rounded-lg border border-neutral-900 bg-neutral-950/60 backdrop-blur-md">
+        <div class="h-[1px] w-10 bg-red-500/50 mb-4"></div>
+        <h4 class="font-mono text-xs text-red-400 tracking-[0.2em] uppercase mb-4">LANGUAGES & TOOLS</h4>
+        <div class="flex flex-wrap gap-2">
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">Python</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">Java</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">C</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">SQL</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">HTML</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">Git</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">GitHub</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">Jupyter</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">Google Colab</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">VS Code</span>
+        </div>
+      </div>
+
+      <!-- Machine Learning -->
+      <div class="reveal reveal-delay-2 p-6 rounded-lg border border-neutral-900 bg-neutral-950/60 backdrop-blur-md">
+        <div class="h-[1px] w-10 bg-red-500/50 mb-4"></div>
+        <h4 class="font-mono text-xs text-red-400 tracking-[0.2em] uppercase mb-4">MACHINE LEARNING</h4>
+        <div class="flex flex-wrap gap-2">
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">Scikit-learn</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">Supervised Learning</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">Classification</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">Regression</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">Feature Engineering</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">Model Evaluation</span>
+        </div>
+      </div>
+
+      <!-- Deep Learning -->
+      <div class="reveal reveal-delay-3 p-6 rounded-lg border border-neutral-900 bg-neutral-950/60 backdrop-blur-md">
+        <div class="h-[1px] w-10 bg-red-500/50 mb-4"></div>
+        <h4 class="font-mono text-xs text-red-400 tracking-[0.2em] uppercase mb-4">DEEP LEARNING</h4>
+        <div class="flex flex-wrap gap-2">
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">TensorFlow</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">Keras</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">LSTM</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">LSTM Autoencoder</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">Neural Networks</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">Anomaly Detection</span>
+        </div>
+      </div>
+
+      <!-- NLP & Data -->
+      <div class="reveal reveal-delay-4 p-6 rounded-lg border border-neutral-900 bg-neutral-950/60 backdrop-blur-md">
+        <div class="h-[1px] w-10 bg-red-500/50 mb-4"></div>
+        <h4 class="font-mono text-xs text-red-400 tracking-[0.2em] uppercase mb-4">NLP & DATA ANALYSIS</h4>
+        <div class="flex flex-wrap gap-2">
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">TF-IDF</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">Sentiment Analysis</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">Pandas</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">NumPy</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">Matplotlib</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">Data Cleaning</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">EDA</span>
+        </div>
+      </div>
+
+      <!-- Deployment & Hardware -->
+      <div class="reveal reveal-delay-5 p-6 rounded-lg border border-neutral-900 bg-neutral-950/60 backdrop-blur-md md:col-span-2">
+        <div class="h-[1px] w-10 bg-red-500/50 mb-4"></div>
+        <h4 class="font-mono text-[10px] text-red-400 tracking-[0.2em] uppercase mb-4">DEPLOYMENT & HARDWARE</h4>
+        <div class="flex flex-wrap gap-2">
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">Flask</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">Streamlit</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">REST API</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">Arduino</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">Serial Communication</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">IoT Integration</span>
+          <span class="px-2.5 py-1 rounded border border-neutral-800 bg-neutral-900/50 text-xs font-mono text-neutral-300 hover:border-red-500/40 hover:text-red-400 transition-all duration-300">Real-Time Monitoring</span>
+        </div>
+      </div>
+    </div>
+    </div>
+  </section>
+
+  <!-- WORK EXPERIENCE -->
+  <section id="experience" class="relative px-8 py-24 section-glow bg-black/80 backdrop-blur-sm">
+    <div class="max-w-5xl mx-auto">
+    <div class="reveal">
+      <div class="flex items-center space-x-3 mb-3">
+        <i data-lucide="activity" class="w-5 h-5 text-red-500"></i>
+        <h2 class="font-mono text-xs text-red-400 tracking-[0.3em] uppercase">WORK EXPERIENCE // LOG</h2>
+      </div>
+      <h3 class="font-display font-black text-4xl text-white mb-12">Field Operations</h3>
+    </div>
+
+    <div class="reveal reveal-delay-1 relative p-8 rounded-lg border border-neutral-900 bg-neutral-950/60 backdrop-blur-md">
+      <div class="absolute -top-1.5 -left-1.5 w-3.5 h-3.5 border border-red-500/40 flex items-center justify-center">
+        <div class="w-1 h-1 bg-red-500"></div>
+      </div>
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+        <div>
+          <h4 class="font-display font-bold text-lg text-white">Machine Learning Intern</h4>
+          <p class="font-mono text-xs text-neutral-500 tracking-wider">Neovent Innovations, Kannur</p>
+        </div>
+        <span class="font-mono text-xs text-red-400 tracking-wider mt-2 sm:mt-0 px-3 py-1 border border-red-500/20 rounded">JUN 2025 — JUL 2025</span>
+      </div>
+      <div class="h-[1px] w-full bg-neutral-900 mb-4"></div>
+      <ul class="space-y-3">
+        <li class="flex items-start space-x-3">
+          <span class="w-1 h-1 bg-red-500 rounded-full mt-1.5 shrink-0"></span>
+          <p class="text-sm text-neutral-400 leading-relaxed">Completed a 4-week ML internship covering data preprocessing, model development, model evaluation, and practical applications of AI techniques within a structured ML pipeline.</p>
+        </li>
+        <li class="flex items-start space-x-3">
+          <span class="w-1 h-1 bg-red-500 rounded-full mt-1.5 shrink-0"></span>
+          <p class="text-sm text-neutral-400 leading-relaxed">Applied supervised learning workflows on real-world datasets, covering data cleaning, feature engineering, model training, and performance evaluation using Python.</p>
+        </li>
+        <li class="flex items-start space-x-3">
+          <span class="w-1 h-1 bg-red-500 rounded-full mt-1.5 shrink-0"></span>
+          <p class="text-sm text-neutral-400 leading-relaxed">Collaborated with the team on documentation and testing of ML workflows, strengthening proficiency in dataset handling and Python-based predictive analytics.</p>
+        </li>
+      </ul>
+    </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects" class="relative px-8 py-24 section-glow bg-black/80 backdrop-blur-sm">
+    <div class="max-w-5xl mx-auto">
+    <div class="reveal">
+      <div class="flex items-center space-x-3 mb-3">
+        <i data-lucide="terminal" class="w-5 h-5 text-red-500"></i>
+        <h2 class="font-mono text-xs text-red-400 tracking-[0.3em] uppercase">PROJECTS // ARENA</h2>
+      </div>
+      <h3 class="font-display font-black text-4xl text-white mb-12">Deployed Systems</h3>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Project 1 -->
+      <div class="reveal reveal-delay-1 p-8 rounded-lg border border-neutral-900 bg-neutral-950/60 backdrop-blur-md hover:border-red-500/30 transition-all duration-500 group">
+        <div class="flex items-center justify-between mb-3">
+          <span class="font-mono text-xs text-red-400 tracking-wider px-2 py-0.5 border border-red-500/20 rounded">PROJECT_01</span>
+          <a href="https://github.com/thejuspk07/lstm-anomaly-detection" target="_blank" class="text-neutral-400 hover:text-red-400 transition-colors">
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
+        <h4 class="font-display font-bold text-lg text-white mb-2 group-hover:text-red-400 transition-colors">LSTM-Based Multi-Sensor Anomaly Detection</h4>
+        <div class="flex flex-wrap gap-1.5 mb-4">
+          <span class="px-2 py-0.5 rounded text-xs font-mono bg-red-500/10 text-red-400 border border-red-500/10">Python</span>
+          <span class="px-2 py-0.5 rounded text-xs font-mono bg-red-500/10 text-red-400 border border-red-500/10">TensorFlow</span>
+          <span class="px-2 py-0.5 rounded text-xs font-mono bg-red-500/10 text-red-400 border border-red-500/10">Keras</span>
+          <span class="px-2 py-0.5 rounded text-xs font-mono bg-red-500/10 text-red-400 border border-red-500/10">Arduino</span>
+          <span class="px-2 py-0.5 rounded text-xs font-mono bg-red-500/10 text-red-400 border border-red-500/10">Flask</span>
+          <span class="px-2 py-0.5 rounded text-xs font-mono bg-red-500/10 text-red-400 border border-red-500/10">Streamlit</span>
+        </div>
+        <ul class="space-y-2.5">
+          <li class="flex items-start space-x-2">
+            <span class="w-1 h-1 bg-red-500 rounded-full mt-1.5 shrink-0"></span>
+            <p class="text-sm text-neutral-400 leading-relaxed">AI-powered motor health monitoring using LSTM Autoencoder for real-time anomaly detection across 3 multi-sensor time-series streams (MPU6050).</p>
+          </li>
+          <li class="flex items-start space-x-2">
+            <span class="w-1 h-1 bg-red-500 rounded-full mt-1.5 shrink-0"></span>
+            <p class="text-sm text-neutral-400 leading-relaxed">Built real-time dashboards using Flask and Streamlit for reconstruction error visualization, live sensor data tracking, and predictive maintenance alerts.</p>
+          </li>
+          <li class="flex items-start space-x-2">
+            <span class="w-1 h-1 bg-red-500 rounded-full mt-1.5 shrink-0"></span>
+            <p class="text-sm text-neutral-400 leading-relaxed">Integrated Arduino-based LED alert system and tested/validated against live sensor streams for real-time performance monitoring.</p>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Project 2 -->
+      <div class="reveal reveal-delay-2 p-8 rounded-lg border border-neutral-900 bg-neutral-950/60 backdrop-blur-md hover:border-red-500/30 transition-all duration-500 group">
+        <div class="flex items-center justify-between mb-3">
+          <span class="font-mono text-xs text-red-400 tracking-wider px-2 py-0.5 border border-red-500/20 rounded">PROJECT_02</span>
+          <a href="https://github.com/thejuspk07/tweet-sentiment-analysis" target="_blank" class="text-neutral-400 hover:text-red-400 transition-colors">
+            <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
+          </a>
+        </div>
+        <h4 class="font-display font-bold text-lg text-white mb-2 group-hover:text-red-400 transition-colors">Sentiment Analysis of Tweets</h4>
+        <div class="flex flex-wrap gap-1.5 mb-4">
+          <span class="px-2 py-0.5 rounded text-xs font-mono bg-red-500/10 text-red-400 border border-red-500/10">Python</span>
+          <span class="px-2 py-0.5 rounded text-xs font-mono bg-red-500/10 text-red-400 border border-red-500/10">Scikit-learn</span>
+          <span class="px-2 py-0.5 rounded text-xs font-mono bg-red-500/10 text-red-400 border border-red-500/10">TF-IDF</span>
+          <span class="px-2 py-0.5 rounded text-xs font-mono bg-red-500/10 text-red-400 border border-red-500/10">NLP</span>
+          <span class="px-2 py-0.5 rounded text-xs font-mono bg-red-500/10 text-red-400 border border-red-500/10">Streamlit</span>
+        </div>
+        <ul class="space-y-2.5">
+          <li class="flex items-start space-x-2">
+            <span class="w-1 h-1 bg-red-500 rounded-full mt-1.5 shrink-0"></span>
+            <p class="text-sm text-neutral-400 leading-relaxed">End-to-end NLP pipeline to classify tweet sentiment across 2 categories (positive/negative), covering text preprocessing, TF-IDF feature extraction, model training, and evaluation.</p>
+          </li>
+          <li class="flex items-start space-x-2">
+            <span class="w-1 h-1 bg-red-500 rounded-full mt-1.5 shrink-0"></span>
+            <p class="text-sm text-neutral-400 leading-relaxed">Implemented SVM-based classification model and deployed an interactive Streamlit web application delivering real-time sentiment predictions on unseen text data.</p>
+          </li>
+        </ul>
+      </div>
+    </div>
+    </div>
+  </section>
+
+  <!-- EDUCATION -->
+  <section id="education" class="relative px-8 py-24 section-glow bg-black/80 backdrop-blur-sm">
+    <div class="max-w-5xl mx-auto">
+    <div class="reveal">
+      <div class="flex items-center space-x-3 mb-3">
+        <i data-lucide="database" class="w-5 h-5 text-red-500"></i>
+        <h2 class="font-mono text-xs text-red-400 tracking-[0.3em] uppercase">EDUCATION // CHRONOLOGY</h2>
+      </div>
+      <h3 class="font-display font-black text-4xl text-white mb-12">Training Protocol</h3>
+    </div>
+
+    <div class="space-y-6">
+      <!-- B.Tech -->
+      <div class="reveal reveal-delay-1 relative p-6 rounded-lg border border-neutral-900 bg-neutral-950/60 backdrop-blur-md pl-10">
+        <div class="absolute left-6 top-6 w-3.5 h-3.5 border border-red-500/60 rounded-full flex items-center justify-center z-10">
+          <div class="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse"></div>
+        </div>
+        <div class="timeline-line"></div>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          <div class="ml-3">
+            <h4 class="font-display font-bold text-sm text-white">B.Tech in Artificial Intelligence and Data Science</h4>
+            <p class="text-xs text-neutral-500 mt-0.5">Vimal Jyothi Engineering College, Chemperi, Kannur, Kerala</p>
+          </div>
+          <div class="flex items-center space-x-3 mt-2 sm:mt-0">
+            <span class="font-mono text-xs text-neutral-400 px-2 py-0.5 border border-neutral-800 rounded">CGPA: 7.2</span>
+            <span class="font-mono text-xs text-red-400">2023 — 2027</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 12th -->
+      <div class="reveal reveal-delay-2 relative p-6 rounded-lg border border-neutral-900 bg-neutral-950/60 backdrop-blur-md pl-10">
+        <div class="absolute left-6 top-6 w-3.5 h-3.5 border border-neutral-700 rounded-full flex items-center justify-center z-10">
+          <div class="w-1.5 h-1.5 bg-neutral-500 rounded-full"></div>
+        </div>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          <div class="ml-3">
+            <h4 class="font-display font-bold text-sm text-white">Higher Secondary Education (12th)</h4>
+            <p class="text-xs text-neutral-500 mt-0.5">Chembilode Higher Secondary School</p>
+          </div>
+          <div class="flex items-center space-x-3 mt-2 sm:mt-0">
+            <span class="font-mono text-xs text-neutral-400 px-2 py-0.5 border border-neutral-800 rounded">Score: 85%</span>
+            <span class="font-mono text-xs text-neutral-400">2020 — 2022</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- 10th -->
+      <div class="reveal reveal-delay-3 relative p-6 rounded-lg border border-neutral-900 bg-neutral-950/60 backdrop-blur-md pl-10">
+        <div class="absolute left-6 top-6 w-3.5 h-3.5 border border-neutral-700 rounded-full flex items-center justify-center z-10">
+          <div class="w-1.5 h-1.5 bg-neutral-500 rounded-full"></div>
+        </div>
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+          <div class="ml-3">
+            <h4 class="font-display font-bold text-sm text-white">SSLC (10th)</h4>
+            <p class="text-xs text-neutral-500 mt-0.5">Chembilode Higher Secondary School</p>
+          </div>
+          <div class="flex items-center space-x-3 mt-2 sm:mt-0">
+            <span class="font-mono text-xs text-neutral-400 px-2 py-0.5 border border-neutral-800 rounded">Score: 95.5%</span>
+            <span class="font-mono text-xs text-neutral-400">2019 — 2020</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+  </section>
+
+  <!-- CERTIFICATIONS -->
+  <section id="certifications" class="relative px-8 py-24 section-glow bg-black/80 backdrop-blur-sm">
+    <div class="max-w-5xl mx-auto">
+    <div class="reveal">
+      <div class="flex items-center space-x-3 mb-3">
+        <i data-lucide="sparkles" class="w-5 h-5 text-red-500"></i>
+        <h2 class="font-mono text-xs text-red-400 tracking-[0.3em] uppercase">CERTIFICATIONS // VERIFIED</h2>
+      </div>
+      <h3 class="font-display font-black text-4xl text-white mb-12">Accreditations</h3>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="reveal reveal-delay-1 p-5 rounded-lg border border-neutral-900 bg-neutral-950/60 backdrop-blur-md hover:border-red-500/30 transition-all duration-500 group">
+        <div class="flex items-center space-x-2 mb-3">
+          <i data-lucide="check" class="w-3 h-3 text-red-500"></i>
+          <span class="font-mono text-[8px] text-red-400 tracking-wider">MICROSOFT LEARN</span>
+        </div>
+        <p class="text-xs text-neutral-300 leading-relaxed">Introduction to Machine Learning</p>
+        <p class="text-xs text-neutral-500 mt-1">Artificial Intelligence Fundamentals — IBM SkillsBuild</p>
+      </div>
+
+      <div class="reveal reveal-delay-2 p-5 rounded-lg border border-neutral-900 bg-neutral-950/60 backdrop-blur-md hover:border-red-500/30 transition-all duration-500 group">
+        <div class="flex items-center space-x-2 mb-3">
+          <i data-lucide="check" class="w-3 h-3 text-red-500"></i>
+          <span class="font-mono text-[8px] text-red-400 tracking-wider">WINGSPAN / FORAGE</span>
+        </div>
+        <p class="text-xs text-neutral-300 leading-relaxed">Python Fundamentals</p>
+        <p class="text-xs text-neutral-500 mt-1">Solutions Architecture Job Simulation</p>
+      </div>
+
+      <div class="reveal reveal-delay-3 p-5 rounded-lg border border-neutral-900 bg-neutral-950/60 backdrop-blur-md hover:border-red-500/30 transition-all duration-500 group">
+        <div class="flex items-center space-x-2 mb-3">
+          <i data-lucide="check" class="w-3 h-3 text-red-500"></i>
+          <span class="font-mono text-[8px] text-red-400 tracking-wider">NEOVENT INNOVATIONS</span>
+        </div>
+        <p class="text-xs text-neutral-300 leading-relaxed">Machine Learning Internship Certificate</p>
+      </div>
+    </div>
+    </div>
+  </section>
+
+  <!-- CONTACT & LANGUAGES -->
+  <section id="contact" class="relative px-8 pt-24 pb-16 section-glow bg-black/80 backdrop-blur-sm">
+    <div class="max-w-5xl mx-auto">
+    <div class="reveal">
+      <div class="flex items-center space-x-3 mb-3">
+        <i data-lucide="send" class="w-5 h-5 text-red-500"></i>
+        <h2 class="font-mono text-xs text-red-400 tracking-[0.3em] uppercase">CONTACT // HANDSHAKE</h2>
+      </div>
+      <h3 class="font-display font-black text-4xl text-white mb-12">Establish Connection</h3>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <!-- Contact Info -->
+      <div class="reveal reveal-delay-1 p-6 rounded-lg border border-neutral-900 bg-neutral-950/60 backdrop-blur-md">
+        <div class="h-[1px] w-10 bg-red-500/50 mb-6"></div>
+        <div class="space-y-4">
+          <a href="tel:+917736197243" class="flex items-center space-x-3 group">
+            <i data-lucide="phone" class="w-4 h-4 text-neutral-400 group-hover:text-red-400 transition-colors"></i>
+            <span class="text-xs text-neutral-400 group-hover:text-white transition-colors">+91 7736197243</span>
+          </a>
+          <a href="mailto:thejuspkwork@gmail.com" class="flex items-center space-x-3 group">
+            <i data-lucide="mail" class="w-4 h-4 text-neutral-400 group-hover:text-red-400 transition-colors"></i>
+            <span class="text-xs text-neutral-400 group-hover:text-white transition-colors">thejuspkwork@gmail.com</span>
+          </a>
+          <a href="https://github.com/thejuspk07" target="_blank" class="flex items-center space-x-3 group">
+            <i data-lucide="github" class="w-4 h-4 text-neutral-400 group-hover:text-red-400 transition-colors"></i>
+            <span class="text-xs text-neutral-400 group-hover:text-white transition-colors">github.com/thejuspk07</span>
+          </a>
+          <a href="https://linkedin.com/in/thejus-pk" target="_blank" class="flex items-center space-x-3 group">
+            <i data-lucide="linkedin" class="w-4 h-4 text-neutral-400 group-hover:text-red-400 transition-colors"></i>
+            <span class="text-xs text-neutral-400 group-hover:text-white transition-colors">linkedin.com/in/thejus-pk</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Languages & Soft Skills -->
+      <div class="reveal reveal-delay-2 p-6 rounded-lg border border-neutral-900 bg-neutral-950/60 backdrop-blur-md">
+        <div class="h-[1px] w-10 bg-red-500/50 mb-4"></div>
+        <h4 class="font-mono text-xs text-red-400 tracking-[0.2em] uppercase mb-4">LANGUAGES & SOFT SKILLS</h4>
+        <div class="space-y-3 mb-6">
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-neutral-300">English</span>
+            <div class="flex space-x-0.5">
+              <span class="w-2 h-1 bg-red-500 rounded-sm"></span><span class="w-2 h-1 bg-red-500 rounded-sm"></span><span class="w-2 h-1 bg-red-500 rounded-sm"></span><span class="w-2 h-1 bg-red-500 rounded-sm"></span><span class="w-2 h-1 bg-neutral-800 rounded-sm"></span>
+            </div>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-neutral-300">Hindi</span>
+            <div class="flex space-x-0.5">
+              <span class="w-2 h-1 bg-red-500 rounded-sm"></span><span class="w-2 h-1 bg-red-500 rounded-sm"></span><span class="w-2 h-1 bg-red-500 rounded-sm"></span><span class="w-2 h-1 bg-neutral-800 rounded-sm"></span><span class="w-2 h-1 bg-neutral-800 rounded-sm"></span>
+            </div>
+          </div>
+          <div class="flex items-center justify-between">
+            <span class="text-xs text-neutral-300">Malayalam</span>
+            <div class="flex space-x-0.5">
+              <span class="w-2 h-1 bg-red-500 rounded-sm"></span><span class="w-2 h-1 bg-red-500 rounded-sm"></span><span class="w-2 h-1 bg-red-500 rounded-sm"></span><span class="w-2 h-1 bg-red-500 rounded-sm"></span><span class="w-2 h-1 bg-red-500 rounded-sm"></span>
+            </div>
+          </div>
+        </div>
+        <div class="h-[1px] w-full bg-neutral-900 mb-4"></div>
+        <div class="flex flex-wrap gap-2">
+          <span class="px-2 py-0.5 rounded text-xs font-mono text-neutral-400 border border-neutral-800">Teamwork</span>
+          <span class="px-2 py-0.5 rounded text-xs font-mono text-neutral-400 border border-neutral-800">Communication</span>
+          <span class="px-2 py-0.5 rounded text-xs font-mono text-neutral-400 border border-neutral-800">Problem-Solving</span>
+          <span class="px-2 py-0.5 rounded text-xs font-mono text-neutral-400 border border-neutral-800">Decision-Making</span>
+          <span class="px-2 py-0.5 rounded text-xs font-mono text-neutral-400 border border-neutral-800">Analytical Thinking</span>
+          <span class="px-2 py-0.5 rounded text-xs font-mono text-neutral-400 border border-neutral-800">Attention to Detail</span>
+          <span class="px-2 py-0.5 rounded text-xs font-mono text-neutral-400 border border-neutral-800">Time Management</span>
+        </div>
+      </div>
+    </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="relative px-8 py-8 border-t border-neutral-900/30 bg-black/80 backdrop-blur-sm">
+    <div class="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-center text-xs font-mono text-neutral-400">
+      <span>© <span id="current-year"></span> THEJUS P K // ALL RIGHTS RESERVED</span>
+    </div>
+  </footer>
+
+  </div> <!-- end #content-wrapper -->
+  <script>
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+    
+    function toggleMobileMenu() {
+      const menu = document.getElementById('mobile-menu');
+      if (menu.classList.contains('hidden')) {
+        menu.classList.remove('hidden');
+        setTimeout(() => menu.classList.remove('opacity-0'), 10);
+      } else {
+        menu.classList.add('opacity-0');
+        setTimeout(() => menu.classList.add('hidden'), 300);
+      }
+    }
+    
+    lucide.createIcons();
+    (function () {
+      // IMPORTANT: set this to the ACTUAL number of frame images you have in frames/
+      const TOTAL_FRAMES = 180;
+      const FRAME_DIR = 'frames/';
+      const PIXELS_PER_FRAME = 10;
+
+      const canvas = document.getElementById('frame-canvas');
+      const ctx = canvas.getContext('2d');
+
+      const frames = new Array(TOTAL_FRAMES);
+      let current = 0;
+      let target = 0;
+      let lastDrawnIndex = -1; // last successfully drawn frame index
+
+      function frameUrl(i) {
+        const n = String(i + 1).padStart(3, '0');
+        return FRAME_DIR + 'ezgif-frame-' + n + '.jpg';
+      }
+
+      function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        drawFrame(Math.round(current));
+      }
+
+      function isReady(img) {
+        return img && img.complete && img.naturalWidth > 0;
+      }
+
+      function drawFrame(index) {
+        let img = frames[index];
+
+        if (!isReady(img)) {
+          // Target frame not loaded yet — fall back to last good frame
+          if (lastDrawnIndex === -1 || !isReady(frames[lastDrawnIndex])) {
+            return; // nothing usable to draw yet, skip this tick
+          }
+          img = frames[lastDrawnIndex];
+        } else {
+          lastDrawnIndex = index;
+        }
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      }
+
+      function preload() {
+        for (let i = 0; i < TOTAL_FRAMES; i++) {
+          const img = new Image();
+          img.onload = () => {
+            if (i === 0) drawFrame(0);
+          };
+          img.onerror = () => {
+            console.warn('Failed to load frame:', frameUrl(i));
+          };
+          img.src = frameUrl(i);
+          frames[i] = img;
+        }
+      }
+
+      function onScroll() {
+        const scrollY = window.scrollY || window.pageYOffset;
+        const maxScroll = TOTAL_FRAMES * PIXELS_PER_FRAME;
+        const progress = Math.min(scrollY / maxScroll, 1);
+        target = progress * (TOTAL_FRAMES - 1);
+      }
+
+      function tick() {
+        const diff = target - current;
+        if (Math.abs(diff) > 0.01) {
+          current += diff * 0.07; // smoothing factor
+        } else {
+          current = target;
+        }
+        drawFrame(Math.round(current));
+        requestAnimationFrame(tick);
+      }
+
+      preload();
+      resize();
+      tick();
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', resize);
+    })();
+
+    // Scroll reveal observer
+    const revealObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          // Play whoosh sound on section reveal (only for main section headers)
+          if (entry.target.closest('section') && !entry.target.classList.contains('reveal-delay-1')) {
+            SFX.whoosh();
+          }
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+    // ========================================
+    // SFX ENGINE - Web Audio API Synth Sounds
+    // ========================================
+    const SFX = (() => {
+      let ctx = null;
+      let muted = false;
+      let ambientOsc = null;
+      let ambientGain = null;
+      let ambientPlaying = false;
+
+      function getCtx() {
+        if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (ctx.state === 'suspended') ctx.resume();
+        return ctx;
+      }
+
+      // Short cyberpunk click beep
+      function click() {
+        if (muted) return;
+        const c = getCtx();
+        const osc = c.createOscillator();
+        const gain = c.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1200, c.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(600, c.currentTime + 0.08);
+        gain.gain.setValueAtTime(0.08, c.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.1);
+        osc.connect(gain).connect(c.destination);
+        osc.start(c.currentTime);
+        osc.stop(c.currentTime + 0.1);
+      }
+
+      // Subtle hover tick
+      function hover() {
+        if (muted) return;
+        const c = getCtx();
+        const osc = c.createOscillator();
+        const gain = c.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(800, c.currentTime);
+        gain.gain.setValueAtTime(0.03, c.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.04);
+        osc.connect(gain).connect(c.destination);
+        osc.start(c.currentTime);
+        osc.stop(c.currentTime + 0.04);
+      }
+
+      // Section reveal whoosh
+      function whoosh() {
+        if (muted) return;
+        const c = getCtx();
+        const bufferSize = c.sampleRate * 0.3;
+        const buffer = c.createBuffer(1, bufferSize, c.sampleRate);
+        const data = buffer.getChannelData(0);
+        for (let i = 0; i < bufferSize; i++) {
+          data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+        }
+        const noise = c.createBufferSource();
+        noise.buffer = buffer;
+        const filter = c.createBiquadFilter();
+        filter.type = 'bandpass';
+        filter.frequency.setValueAtTime(2000, c.currentTime);
+        filter.frequency.exponentialRampToValueAtTime(200, c.currentTime + 0.25);
+        filter.Q.value = 0.5;
+        const gain = c.createGain();
+        gain.gain.setValueAtTime(0.06, c.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, c.currentTime + 0.3);
+        noise.connect(filter).connect(gain).connect(c.destination);
+        noise.start(c.currentTime);
+      }
+
+      // Ambient background track (toggleable)
+      const ambientAudio = new Audio('samurai.mp3');
+      ambientAudio.loop = true;
+      ambientAudio.volume = 0.5; // Adjust volume as needed
+
+      function startAmbient() {
+        if (ambientPlaying) return;
+        ambientPlaying = true;
+        ambientAudio.play().catch(e => console.log('Audio playback prevented:', e));
+      }
+
+      function stopAmbient() {
+        ambientPlaying = false;
+        ambientAudio.pause();
+      }
+
+      function toggleMute() {
+        muted = !muted;
+        document.getElementById('sound-icon-on').classList.toggle('hidden', muted);
+        document.getElementById('sound-icon-off').classList.toggle('hidden', !muted);
+        if (muted) {
+          stopAmbient();
+        } else {
+          click();
+          startAmbient();
+        }
+      }
+
+      return { click, hover, whoosh, toggleMute, startAmbient, stopAmbient };
+    })();
+
+    // Wire up sound to ALL interactive elements
+    document.addEventListener('DOMContentLoaded', () => {
+      // Click sounds on all buttons
+      document.querySelectorAll('button, a[href]').forEach(el => {
+        el.addEventListener('click', () => SFX.click());
+      });
+
+      // Hover sounds on interactive cards and skill tags
+      document.querySelectorAll(
+        'button, a[href], .group, [class*="hover:border-red"]'
+      ).forEach(el => {
+        el.addEventListener('mouseenter', () => SFX.hover());
+      });
+    });
+  </script>
+</body>
+
+</html>
