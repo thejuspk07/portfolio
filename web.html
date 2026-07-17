@@ -170,9 +170,9 @@
     <div id="boot-log" class="max-w-2xl"></div>
   </div>
 
-  <!-- Fixed canvas background for scroll animation -->
   <div id="canvas-bg">
     <canvas id="frame-canvas"></canvas>
+    <canvas id="dust-canvas" class="absolute inset-0 w-full h-full pointer-events-none z-[1]"></canvas>
   </div>
 
   <!-- All scrollable content sits on top of the canvas -->
@@ -1075,6 +1075,56 @@
         el.addEventListener('mouseenter', () => SFX.hover());
       });
     });
+
+    // ========================================
+    // DUST PARTICLE ENGINE
+    // ========================================
+    (() => {
+      const canvas = document.getElementById('dust-canvas');
+      const ctx = canvas.getContext('2d');
+      let width, height;
+      let particles = [];
+
+      function init() {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+        particles = [];
+        for (let i = 0; i < 150; i++) {
+          particles.push({
+            x: Math.random() * width,
+            y: Math.random() * height,
+            r: Math.random() * 1.5 + 0.5, // 0.5 to 2.0 radius
+            vx: (Math.random() - 0.5) * 0.3,
+            vy: (Math.random() - 0.5) * 0.5 - 0.2, // bias upwards
+            opacity: Math.random() * 0.5 + 0.1, // 0.1 to 0.6 opacity
+            color: Math.random() > 0.8 ? '239, 68, 68' : '255, 255, 255' // mostly white, some red
+          });
+        }
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, width, height);
+        particles.forEach(p => {
+          p.x += p.vx;
+          p.y += p.vy;
+          
+          if (p.x < 0) p.x = width;
+          if (p.x > width) p.x = 0;
+          if (p.y < 0) p.y = height;
+          if (p.y > height) p.y = 0;
+
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(${p.color}, ${p.opacity})`;
+          ctx.fill();
+        });
+        requestAnimationFrame(draw);
+      }
+
+      window.addEventListener('resize', init);
+      init();
+      draw();
+    })();
   </script>
 </body>
 
