@@ -151,6 +151,24 @@
     .visible .skill-bar-fill {
       width: var(--skill-level);
     }
+    
+    /* Vinyl Spin Animation */
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    .animate-spin-slow {
+      animation: spin 3s linear infinite;
+    }
+    
+    /* Scroll Line Drop Animation */
+    @keyframes dropLine {
+      0% { transform: translateY(-100%); }
+      100% { transform: translateY(200%); }
+    }
+    .animate-drop-line {
+      animation: dropLine 2s linear infinite;
+    }
 
     /* Timeline connector */
     .timeline-line {
@@ -222,9 +240,13 @@
         <a href="https://linkedin.com/in/thejus-pk" target="_blank" class="flex items-center justify-center p-2 text-neutral-300 hover:text-white transition-all duration-300" title="LinkedIn">
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
         </a>
-        <button id="sound-toggle" onclick="SFX.toggleMute()" class="flex items-center justify-center p-2 text-neutral-300 hover:text-white transition-all duration-300" title="Toggle Sound">
-          <svg id="sound-icon-on" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 hidden"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
-          <svg id="sound-icon-off" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+        <button id="sound-toggle" onclick="SFX.toggleMute()" class="flex items-center justify-center p-2 hover:opacity-80 transition-opacity duration-300 relative group" title="Toggle Sound">
+          <!-- Ping animation ring to draw attention -->
+          <div id="vinyl-ping" class="absolute inset-0 rounded-full border border-red-500 animate-ping opacity-70"></div>
+          
+          <img src="media/vinyl.jpg" id="vinyl-icon" class="w-8 h-8 rounded-full border border-neutral-700/50 shadow-[0_0_10px_rgba(0,0,0,0.5)] object-cover object-center grayscale opacity-60 transition-all duration-300 relative z-10" alt="Toggle Sound">
+          
+          <div id="sound-tooltip" class="absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-mono tracking-widest text-red-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300">PLAY MUSIC</div>
         </button>
         <button onclick="SFX.click(); document.getElementById('contact').scrollIntoView({behavior:'smooth'})" class="px-5 py-2 rounded bg-white text-black font-mono text-xs tracking-wider hover:bg-red-500 hover:text-black transition-all duration-300 uppercase hidden md:block">
           CONTACT
@@ -359,17 +381,21 @@
       </div>
 
       <!-- Bottom indicator status -->
-      <div class="flex flex-col sm:flex-row items-center justify-between pt-8 border-t border-neutral-900/30 text-xs font-mono text-neutral-500">
-        <div class="flex items-center space-x-4">
+      <div class="flex flex-col sm:flex-row items-end justify-between pt-8 text-xs font-mono text-neutral-500 relative">
+        <div class="flex items-center space-x-4 mb-4 sm:mb-0">
           <span class="flex items-center space-x-2">
             <span class="w-2 h-2 bg-red-500 rounded-full animate-ping"></span>
             <span class="text-white">COGNITIVE NODE LIVE</span>
           </span>
           <span>STREAMS_ACTIVE: 3</span>
         </div>
-        <div class="flex items-center space-x-3 mt-4 sm:mt-0 cursor-pointer" onclick="document.getElementById('skills').scrollIntoView({behavior:'smooth'})">
-          <span>SCROLL TO EXPLORE</span>
-          <i data-lucide="arrow-down" class="w-4 h-4 animate-bounce"></i>
+        
+        <!-- Animated Scroll Hint - Clean Centered Bottom -->
+        <div class="absolute left-1/2 -translate-x-1/2 -bottom-4 flex flex-col items-center cursor-pointer group" onclick="document.getElementById('skills').scrollIntoView({behavior:'smooth'})">
+          <span class="text-[10px] font-mono tracking-[0.3em] text-neutral-400 group-hover:text-red-400 transition-colors uppercase mb-3">Scroll to explore</span>
+          <div class="w-[1px] h-10 bg-neutral-800 relative overflow-hidden">
+            <div class="w-full h-1/2 bg-red-500 animate-drop-line absolute top-0 left-0"></div>
+          </div>
         </div>
       </div>
     </section>
@@ -905,6 +931,13 @@
       function drawFrame() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         
+        // Scale by 5% to crop out the Veo watermark in the bottom corner
+        const scale = 1.05;
+        const scaledWidth = canvas.width * scale;
+        const scaledHeight = canvas.height * scale;
+        const offsetX = (canvas.width - scaledWidth) / 2;
+        const offsetY = (canvas.height - scaledHeight) / 2;
+        
         if (eduAlpha < 1) {
             let img1 = frames[Math.round(current)];
             if (!isReady(img1)) {
@@ -916,7 +949,7 @@
             }
             if (isReady(img1)) {
               ctx.globalAlpha = 1 - eduAlpha;
-              ctx.drawImage(img1, 0, 0, canvas.width, canvas.height);
+              ctx.drawImage(img1, offsetX, offsetY, scaledWidth, scaledHeight);
             }
         }
 
@@ -931,7 +964,7 @@
             }
             if (isReady(img2)) {
               ctx.globalAlpha = eduAlpha;
-              ctx.drawImage(img2, 0, 0, canvas.width, canvas.height);
+              ctx.drawImage(img2, offsetX, offsetY, scaledWidth, scaledHeight);
             }
         }
         
@@ -1163,11 +1196,21 @@
 
       function toggleMute() {
         muted = !muted;
-        document.getElementById('sound-icon-on').classList.toggle('hidden', muted);
-        document.getElementById('sound-icon-off').classList.toggle('hidden', !muted);
+        const vinyl = document.getElementById('vinyl-icon');
+        const ping = document.getElementById('vinyl-ping');
+        const tooltip = document.getElementById('sound-tooltip');
+        
         if (muted) {
+          vinyl.classList.remove('animate-spin-slow');
+          vinyl.classList.add('grayscale', 'opacity-60');
+          if(ping) ping.classList.remove('hidden');
+          if(tooltip) tooltip.textContent = 'PLAY MUSIC';
           stopAmbient();
         } else {
+          vinyl.classList.add('animate-spin-slow');
+          vinyl.classList.remove('grayscale', 'opacity-60');
+          if(ping) ping.classList.add('hidden');
+          if(tooltip) tooltip.textContent = 'PAUSE';
           click();
           startAmbient();
         }
